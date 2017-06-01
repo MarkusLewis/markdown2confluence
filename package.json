@@ -1,7 +1,7 @@
 {
-  "name": "markdown2confluence",
-  "version": "1.2.0",
-  "description": "convert markdown to confluence markup",
+  "name": "markdown-confluence-converter",
+  "version": "1.0.0",
+  "description": "Convert Markdown to Confluence Wiki Markup",
   "main": "index.js",
   "scripts": {
 	"test": "node test.js",
@@ -32,7 +32,7 @@
   "devDependencies": {},
   "repository": {
 	"type": "git",
-	"url": "https://github.com/MarkusLewis/markdown2confluence.git"
+	"url": "https://github.com/Stream-Technologies/markdown2confluence.git"
   },
   "keywords": [
 	"markdown",
@@ -41,7 +41,7 @@
 	"convert"
   ],
   "bugs": {
-	"url": "https://github.com/MarkusLewis/markdown2confluence/issues"
+	"url": "https://github.com/Stream-Technologies/markdown2confluence/issues"
   },
-  "homepage": "https://github.com/MarkusLewis/markdown2confluence"
+  "homepage": "https://github.com/Stream-Technologies/markdown2confluence"
 }
