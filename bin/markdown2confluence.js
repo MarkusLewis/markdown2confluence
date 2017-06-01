@@ -1,20 +1,29 @@
 #!/usr/bin/env node
-var md2conflu = require('../')
-var fs = require('fs')
-var path = require('path')
-var assert = require('assert')
-var stdin = require('get-stdin')
+let markdown2confluence = require('../');
+let fs = require('fs');
+let path = require('path');
+let getStdin = require('get-stdin');
 
-var filename = process.argv[2]
+let filename = process.argv[2];
 
+//Handle File
 if (filename !== null) {
-  assert(filename, 'should have filename')
-  fs.readFile(path.resolve(process.cwd(), filename), function(err, buf) {
-    assert(!err, 'read file ' + filename + ' error!')
-    console.log(md2conflu(buf + ''))
-  })
-} else {
-  stdin(function (str) {
-    console.log(md2conflu(str))
-  })
+  let filepath = path.resolve(process.cwd(), filename);
+
+  fs.readFile(filepath, (err, buffer) => {
+  	if (err) {
+  		console.error('An error occurred while parsing');
+  		console.error(err);
+  		return;
+		}
+
+		let input = buffer.toString();
+
+    console.log(markdown2confluence(input));
+  });
+
+} else { //Handle STDIN
+	getStdin().then(input => {
+		console.log(markdown2confluence(input));
+	});
 }

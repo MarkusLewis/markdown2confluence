@@ -1,114 +1,117 @@
-var marked = require('marked')
-var _ = require('min-util')
-var qs = require('min-qs')
-var inlineLexer = marked.inlineLexer
+let marked = require('marked');
+let _ = require('min-util');
+let qs = require('min-qs');
 
-module.exports = exports = markdown2confluence
+module.exports = exports = markdown2confluence;
 
-// https://roundcorner.atlassian.net/secure/WikiRendererHelpAction.jspa?section=all
-// https://confluence.atlassian.com/display/DOC/Confluence+Wiki+Markup
-// http://blogs.atlassian.com/2011/11/why-we-removed-wiki-markup-editor-in-confluence-4/
+let MAX_CODE_LINE = 20;
 
-var MAX_CODE_LINE = 20
-
-function Renderer() {}
-
-var rawRenderer = marked.Renderer
-
-var langArr = 'actionscript3 bash csharp coldfusion cpp css delphi diff erlang groovy java javafx javascript perl php none powershell python ruby scala sql vb html/xml'.split(/\s+/)
-var langMap = {
-	shell: 'bash'
+function Renderer() {
 }
-for (var i = 0, x; x = langArr[i++];) {
+
+let rawRenderer = new marked.Renderer();
+
+let langArr = 'actionscript3 bash csharp coldfusion cpp css delphi diff erlang groovy java javafx javascript perl php none powershell python ruby scala sql vb html/xml'.split(/\s+/)
+let langMap = {
+	shell: 'bash'
+};
+
+for (let i = 0, x; x = langArr[i++];) {
 	langMap[x] = x
 }
 
 _.extend(Renderer.prototype, rawRenderer.prototype, {
-	  paragraph: function(text) {
-		return text + '\n\n'
-	}
-	, html: function(html) {
-		return html
-	}
-	, heading: function(text, level, raw) {
-		return 'h' + level + '. ' + text + '\n\n'
-	}
-	, strong: function(text) {
-		return '*' + text + '*'
-	}
-	, em: function(text) {
-		return '_' + text + '_'
-	}
-	, del: function(text) {
-		return '-' + text + '-'
-	}
-	, codespan: function(text) {
-		return '{{' + text + '}}'
-	}
-	, blockquote: function(quote) {
-		return '{quote}' + quote + '{quote}'
-	}
-	, br: function() {
-		return '\n'
-	}
-	, hr: function() {
-		return '----'
-	}
-	, link: function(href, title, text) {
-		var arr = [href]
+	paragraph(text) {
+		return text + '\n\n';
+	},
+	html(html) {
+		return html;
+	},
+	heading(text, level, raw) {
+		return 'h' + level + '. ' + text + '\n\n';
+	},
+	strong(text) {
+		return '*' + text + '*';
+	},
+	em(text) {
+		return '_' + text + '_';
+	},
+	del(text) {
+		return '-' + text + '-';
+	},
+	codespan(text) {
+		return '{{' + text + '}}';
+	},
+	blockquote(quote) {
+		return '{quote}' + quote + '{quote}';
+	},
+	br() {
+		return '\n';
+	},
+	hr() {
+		return '----';
+	},
+	link(href, title, text) {
+		let arr = [href];
 		if (title) {
-			arr.unshift(title)
+			arr.unshift(title);
 		}
-		return '[' + arr.join('|') + ']'
-	}
-	, list: function(body, ordered) {
-		var arr = _.filter(_.trim(body).split('\n'), function(line) {
-			return line
-		})
-		var type = ordered ? '#' : '*'
-		return _.map(arr, function(line) {
-			return type + ' ' + line
-		}).join('\n') + '\n\n'
 
-	}
-	, listitem: function(body, ordered) {
-		return body + '\n'
-	}
-	, image: function(href, title, text) {
-		return '!' + href + '!'
-	}
-	, table: function(header, body) {
-		return header + body + '\n'
-	}
-	, tablerow: function(content, flags) {
-		return content + '\n'
-	}
-	, tablecell: function(content, flags) {
-		var type = flags.header ? '||' : '|'
+		return '[' + arr.join('|') + ']';
+	},
+	list(body, ordered) {
+		let arr = _.filter(_.trim(body).split('\n'), function (line) {
+			return line
+		});
+		let type = ordered ? '#' : '*';
+		return _.map(arr, line => type + ' ' + line).join('\n') + '\n\n';
+
+	},
+	listitem(body, ordered) {
+		return body + '\n';
+	},
+	image(href, title, text) {
+		return '!' + href + '!';
+	},
+	table(header, body) {
+		return header + body + '\n';
+	},
+	tablerow(content, flags) {
+		return content + '\n';
+	},
+	tablecell(content, flags) {
+		let type = flags.header ? '||' : '|';
+
 		return type + content
-	}
-	, code: function(code, lang) {
-		// {code:language=java|borderStyle=solid|theme=RDark|linenumbers=true|collapse=true}
-		lang = langMap[lang] || ''
-		var param = {
+	},
+	code(code, lang) {
+		lang = langMap[lang] || '';
+		let param = {
 			language: lang,
 			borderStyle: 'solid',
-			theme: 'RDark', // dark is good
+			theme: 'RDark',
 			linenumbers: true,
 			collapse: false
-		}
-		var lineCount = _.split(code, '\n').length
-		if (lineCount > MAX_CODE_LINE) {
-			// code is too long
-			param.collapse = true
-		}
-		param = qs.stringify(param, '|', '=')
-		return '{code:' + param + '}\n' + code + '\n{code}\n\n'
-	}
-})
+		};
 
-var renderer = new Renderer()
+		let lineCount = _.split(code, '\n').length;
+		if (lineCount > MAX_CODE_LINE) {
+			param.collapse = true;
+		}
+
+		param = qs.stringify(param, '|', '=');
+
+		return '{code:' + param + '}\n' + code + '\n{code}\n\n';
+	},
+	text(text) {
+		return text;
+	}
+});
+
+let renderer = new Renderer();
 
 function markdown2confluence(markdown) {
-	return marked(markdown, {renderer: renderer})
+	return marked(markdown, {
+		renderer: renderer
+	});
 }
