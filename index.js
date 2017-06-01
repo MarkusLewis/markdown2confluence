@@ -9,6 +9,19 @@ let MAX_CODE_LINE = 20;
 function Renderer() {
 }
 
+//Configure Marked
+marked.setOptions({
+	renderer: new marked.Renderer(),
+	gfm: true,
+	tables: true,
+	breaks: false,
+	pedantic: false,
+	sanitize: false,
+	smartLists: true,
+	smartypants: false
+});
+
+//Build Renderer
 let rawRenderer = new marked.Renderer();
 
 let langArr = 'actionscript3 bash csharp coldfusion cpp css delphi diff erlang groovy java javafx javascript perl php none powershell python ruby scala sql vb html/xml'.split(/\s+/)
@@ -52,12 +65,11 @@ _.extend(Renderer.prototype, rawRenderer.prototype, {
 		return '----';
 	},
 	link(href, title, text) {
-		let arr = [href];
-		if (title) {
-			arr.unshift(title);
+		if (text !== null) {
+			return '[' + text + '|' + href + ']';
 		}
 
-		return '[' + arr.join('|') + ']';
+		return '[' + href + ']';
 	},
 	list(body, ordered) {
 		let arr = _.filter(_.trim(body).split('\n'), function (line) {
@@ -82,7 +94,7 @@ _.extend(Renderer.prototype, rawRenderer.prototype, {
 	tablecell(content, flags) {
 		let type = flags.header ? '||' : '|';
 
-		return type + content
+		return type + content;
 	},
 	code(code, lang) {
 		lang = langMap[lang] || '';
