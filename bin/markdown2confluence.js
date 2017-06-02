@@ -4,23 +4,26 @@ let fs = require('fs');
 let path = require('path');
 let getStdin = require('get-stdin');
 
-let filename = process.argv[2];
+let args = process.argv.slice(2);
 
-//Handle File
-if (filename !== null) {
-  let filepath = path.resolve(process.cwd(), filename);
+//Handle Files
+if (args.length > 0) {
 
-  fs.readFile(filepath, (err, buffer) => {
-  	if (err) {
-  		console.error('An error occurred while parsing');
-  		console.error(err);
-  		return;
-		}
+	args.forEach(arg => {
+		let filepath = path.resolve(process.cwd(), arg);
 
-		let input = buffer.toString();
+		fs.readFile(filepath, (err, buffer) => {
+			if (err) {
+				console.error('An error occurred while parsing');
+				console.error(err);
+				return;
+			}
 
-    console.log(markdown2confluence(input));
-  });
+			let input = buffer.toString();
+
+			console.log(markdown2confluence(input));
+		});
+	});
 
 } else { //Handle STDIN
 	getStdin().then(input => {

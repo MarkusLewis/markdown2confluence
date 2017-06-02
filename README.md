@@ -1,4 +1,4 @@
-markdown2confluence
+Markdown to Confluence Converter
 ===
 
 Convert Markdown to Confluence Wiki Markup
@@ -9,7 +9,7 @@ Installation
 ---
 
 ```sh
-npm i markdown2confluence -g
+npm i markdown-confluence-converter -g
 ```
 
 Usage
